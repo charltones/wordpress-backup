@@ -2,6 +2,10 @@
 
 if ! [ -f backup-cron ]
 then
+  echo "wordpress backup sleeping for 30"
+  sleep 30
+  echo "Restoring latest data to wordpress"
+  restore latest
   echo "Creating cron entry to start backup at: $BACKUP_TIME"
   # Note: Must use tabs with indented 'here' scripts.
   cat <<-EOF >> backup-cron

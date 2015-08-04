@@ -13,15 +13,23 @@ if [ -z "$MYSQL_ENV_MYSQL_DATABASE" ]; then echo "Error: MYSQL_ENV_MYSQL_DATABAS
 if [ -z "$MYSQL_ENV_MYSQL_PASSWORD" ]; then echo "Error: MYSQL_ENV_MYSQL_PASSWORD not set"; echo "Finished: FAILURE"; exit 1; fi
 if [ -z "$MYSQL_PORT_3306_TCP_PORT" ]; then echo "Error: MYSQL_PORT_3306_TCP_PORT not set"; echo "Finished: FAILURE"; exit 1; fi
 
-if ! [[ $1 =~ ^[a-zA-Z0-9_-]+$ ]]
+if [[ $1 = "latest" ]]
+then
+  restored=`ls -1 /backups/backup_*.tar.gz | grep -o -E "[0-9]{8}" | sort -nr | head -n 1`
+  echo "Latest backup is $restored, so using that"
+else
+  restored=$1
+fi
+
+if ! [[ $restored =~ ^[a-zA-Z0-9_-]+$ ]]
 then
   echo "The given backup name does not match the expected pattern: only characters, digits, underscore and dash are allowed ([a-zA-Z0-9_-])."
   echo 'Finished: FAILURE'
   exit 1
 fi
 
-FILES_ARCHIVE="/backups/backup_$1.tar.gz"
-SQL_ARCHIVE="/backups/backup_$1.sql.bz2"
+FILES_ARCHIVE="/backups/backup_$restored.tar.gz"
+SQL_ARCHIVE="/backups/backup_$restored.sql.bz2"
 
 if [[ ! -f $FILES_ARCHIVE ]]
 then
